@@ -1,8 +1,32 @@
 const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
 const crossSpawn = require("cross-spawn");
 const stripIndent = require("common-tags/lib/stripIndent");
+const THIS_FILE = fs.readFileSync(__filename);
 
 module.exports = {
+  getCacheKey: (fileData, filename, configString, { instrument, rootDir }) => {
+    return (
+      crypto
+        .createHash("md5")
+        .update(THIS_FILE)
+        .update("\0", "utf8")
+        .update(fileData)
+        .update("\0", "utf8")
+        .update(path.relative(rootDir, filename))
+        .update("\0", "utf8")
+        .update(configString)
+        // TODO load postcssrc (the config) sync and make it part of the cache
+        // key
+        // .update("\0", "utf8")
+        // .update(getPostCssConfig(filename))
+        .update("\0", "utf8")
+        .update(instrument ? "instrument" : "")
+        .digest("hex")
+    );
+  },
+
   process: (src, filename, config, options) => {
     // The "process" function of this Jest transform must be sync,
     // but postcss is async. So we spawn a sync process to do an sync
