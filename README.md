@@ -1,6 +1,6 @@
 # jest-transform-css
 
-A Jest transfomer which enables importing CSS into Jest's `jsdom`.
+A Jest transformer which enables importing CSS into Jest's `jsdom`.
 
 **If you are not here for Visual Regression Testing, but just want to make your tests work with CSS Modules, then you are likley looking for https://github.com/keyanzhang/identity-obj-proxy/.**
 
@@ -22,7 +22,7 @@ A Jest transfomer which enables importing CSS into Jest's `jsdom`.
 
 When you want to do Visual Regression Testing in Jest, it is important that the CSS of components is available to the test setup. So far, CSS was not part of tests as it was mocked away by `identity-obj-proxy`.
 
-`jest-transform-css` is inteded to be used in an `jsdom` environment. When any component imports CSS in the test environment, then the loaded CSS will get added to `jsdom` using [`style-inject`](https://github.com/egoist/style-inject) - just like the Webpack CSS loader would do in a production environment. This means the full styles are added to `jsdom`.
+`jest-transform-css` is intended to be used in an `jsdom` environment. When any component imports CSS in the test environment, then the loaded CSS will get added to `jsdom` using [`style-inject`](https://github.com/egoist/style-inject) - just like the Webpack CSS loader would do in a production environment. This means the full styles are added to `jsdom`.
 
 This doesn't make much sense at first, as `jsdom` is headless (non-visual). However, we can copy the resulting document markup ("the HTML") of `jsdom` and copy it to a [`puppeteer`](https://github.com/googlechrome/puppeteer/) instance. We can let the markup render there and take a screenshot there. The [`jsdom-screenshot`](https://github.com/dferber90/jsdom-screenshot) package does exactly this.
 
@@ -43,7 +43,7 @@ Open `jest.config.js` and modify the `transform`:
 ```
 transform: {
   "^.+\\.js$": "babel-jest",
-  "^.+\\.css$": "./jest-transform-css"
+  "^.+\\.css$": "jest-transform-css"
 }
 ```
 
