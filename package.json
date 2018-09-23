@@ -8,12 +8,15 @@
   "dependencies": {
     "common-tags": "1.8.0",
     "cross-spawn": "6.0.5",
+    "postcss-load-config": "2.0.0",
+    "postcss-modules": "1.3.2",
     "style-inject": "0.3.0"
   },
+  "devDependencies": {
+    "postcss": "^7.0.2"
+  },
   "peerDependencies": {
-    "postcss": "^7.0.2",
-    "postcss-load-config": "^2.0.0",
-    "postcss-modules": "^1.3.2"
+    "postcss": "^7.0.2"
   },
   "keywords": [
     "postcss-runner",
