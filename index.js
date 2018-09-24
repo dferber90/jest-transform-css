@@ -1,12 +1,11 @@
 const fs = require("fs");
-const path = require("path");
 const crypto = require("crypto");
 const crossSpawn = require("cross-spawn");
 const stripIndent = require("common-tags/lib/stripIndent");
 const THIS_FILE = fs.readFileSync(__filename);
 
 module.exports = {
-  getCacheKey: (fileData, filename, configString, { instrument, rootDir }) => {
+  getCacheKey: (fileData, filename, configString, { instrument }) => {
     return (
       crypto
         .createHash("md5")
@@ -14,7 +13,7 @@ module.exports = {
         .update("\0", "utf8")
         .update(fileData)
         .update("\0", "utf8")
-        .update(path.relative(rootDir, filename))
+        .update(filename)
         .update("\0", "utf8")
         .update(configString)
         // TODO load postcssrc (the config) sync and make it part of the cache
