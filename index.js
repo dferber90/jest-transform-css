@@ -1,8 +1,11 @@
 const fs = require("fs");
 const crypto = require("crypto");
 const crossSpawn = require("cross-spawn");
+const cosmiconfig = require("cosmiconfig");
 const stripIndent = require("common-tags/lib/stripIndent");
 const THIS_FILE = fs.readFileSync(__filename);
+const explorer = cosmiconfig("jesttransformcss");
+const transformConfig = explorer.searchSync();
 
 module.exports = {
   getCacheKey: (fileData, filename, configString, { instrument }) => {
@@ -16,6 +19,8 @@ module.exports = {
         .update(filename)
         .update("\0", "utf8")
         .update(configString)
+        .update("\0", "utf8")
+        .update(JSON.stringify(transformConfig))
         // TODO load postcssrc (the config) sync and make it part of the cache
         // key
         // .update("\0", "utf8")
@@ -27,6 +32,28 @@ module.exports = {
   },
 
   process: (src, filename, config, options) => {
+    // skip when plain CSS is used
+    // You can create jesttransformcss.config.js in your project and add
+    // module.exports = { modules: true };
+    // or
+    // module.exports = { modules: filename => filename.endsWith(".mod.css") };
+    // to enable css module transformation. for all or for certain files.
+    const useModules =
+      transformConfig &&
+      transformConfig.config &&
+      ((typeof transformConfig.config.modules === "boolean" &&
+        transformConfig.config.modules) ||
+        (typeof transformConfig.config.modules === "function" &&
+          transformConfig.config.modules(filename)));
+    if (!useModules) {
+      return stripIndent`
+        const styleInject = require('style-inject');
+
+        styleInject(${JSON.stringify(src)});
+        module.exports = {};
+      `;
+    }
+
     // The "process" function of this Jest transform must be sync,
     // but postcss is async. So we spawn a sync process to do an sync
     // transformation!

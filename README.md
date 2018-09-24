@@ -20,7 +20,7 @@ A Jest transformer which enables importing CSS into Jest's `jsdom`.
 
 ## Description
 
-When you want to do Visual Regression Testing in Jest, it is important that the CSS of components is available to the test setup. So far, CSS was not part of tests as it was mocked away by `identity-obj-proxy`.
+When you want to do Visual Regression Testing in Jest, it is important that the CSS of components is available to the test setup. So far, CSS was not part of tests as it was mocked away by using `moduleNameMapper` like a file-mock or `identity-obj-proxy`.
 
 `jest-transform-css` is intended to be used in an `jsdom` environment. When any component imports CSS in the test environment, then the loaded CSS will get added to `jsdom` using [`style-inject`](https://github.com/egoist/style-inject) - just like the Webpack CSS loader would do in a production environment. This means the full styles are added to `jsdom`.
 
@@ -28,19 +28,44 @@ This doesn't make much sense at first, as `jsdom` is headless (non-visual). Howe
 
 Once we obtained a screenshot, we can compare it to the last version of that screenshot we took, and make tests fail in case they did. The [`jest-image-snapshot`](https://github.com/americanexpress/jest-image-snapshot) plugin does that.
 
-## Installation
+## Setup
+
+### Installation
 
 ```bash
 yarn add jest-transform-css --dev
 ```
 
-## Setup
+The old setup of CSS in jest needs to be removed, and the new setup needs to be added next.
 
-### Setup - adding `transform`
+### Removing module name mapping
+
+If your project is using plain CSS imported in the components, then you're likely using a mock file. You can remove that configuration.
+
+```diff
+// in the Jest config
+"moduleNameMapper": {
+- "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+},
+```
+
+If your project is using CSS Modules, then it's likely that `identity-obj-proxy` is configured. It needs to be removed in order for the styles of the `jest-transform-css` to apply.
+
+So, remove these lines from `jest.config.js`:
+
+```diff
+// in the Jest config
+"moduleNameMapper": {
+-  "\\.(s?css|less)$": "identity-obj-proxy"
+},
+```
+
+### Adding `transform`
 
 Open `jest.config.js` and modify the `transform`:
 
 ```
+// in the Jest config
 transform: {
   "^.+\\.js$": "babel-jest",
   "^.+\\.css$": "jest-transform-css"
@@ -55,32 +80,47 @@ transform: {
 >
 > See https://github.com/facebook/jest/tree/master/packages/babel-jest#setup
 
-### Setup - removing `identity-obj-proxy`
+### Enabling CSS modules
 
-If your project is using CSS Modules, then it's likely that `identity-obj-proxy` is configured. It needs to be removed in order for the styles of the `jest-transform-css` to apply.
+By default, `jest-transform-css` will treat every file it transforms as a regular CSS file.
 
-So, remove these lines from `jest.config.js`:
+You need to opt into css-modules mode by specifying it in the configuration. Create a file called `jesttransformcss.config.js` at your project root and add
 
-```diff
-"moduleNameMapper": {
--  "\\.(s?css|less)$": "identity-obj-proxy"
-},
+```js
+// jesttransformcss.config.js
+
+module.exports = {
+  modules: true
+};
 ```
+
+This will enable CSS module transformation for all CSS files transformed by `jest-transform-css`.
+
+If your setup uses both, CSS modules and regular CSS, then you can determine how to load each file individually by specifying a function:
+
+```js
+// jesttransformcss.config.js
+
+module.exports = {
+  modules: filename => filename.endsWith(".mod.css")
+};
+```
+
+This will load all files with `.mod.css` as CSS modules and load all other files as regular CSS. Notice that the function will only be called for whichever regex you provided in the `transform` option of the Jest config.
 
 ## Further setup
 
-There are many ways to setup styles in a project (CSS modules, global styles, external global styles, local global styles, CSS in JS, LESS, SASS just to name a few). How to continue from here on depends on your project.
+There are many ways to set up styles in a project (CSS modules, global styles, external global styles, local global styles, CSS in JS, LESS, SASS just to name a few). How to continue from here depends on your project.
 
-### Further Setup - PostCSS
+### PostCSS
 
 If your setup is using `PostCSS` then you should add a `postcss.config.js` at the root of your folder.
 
-You can apply certain plugins only when `process.env.NODE_ENV === 'test'`. Ensure that valid CSS can be generated. It might be likely that more functionality (transforms) are required to make certain CSS work (like background-images).
+You can apply certain plugins only when `process.env.NODE_ENV === 'test'`. Ensure that valid CSS can be generated.
 
-### Further Setup - css-loader
+> `jest-transform-css` is likley not flexible enough yet to support more sophisticated PostCSS configurations. However, we should be able to add this functionality by extending the configuration file. Feel free to open an issue with your setup and we'll try to support it.
 
-If your setup is using `css-loader` only, without PostCSS then you should be fine. When components import CSS in the test environment, then the CSS is transformed through PostCSS's `cssModules` plugin to generate the classnames. It also injects the styles into `jsdom`.
+### css-loader
 
-## Known Limitations
-
-At the moment I struggled to get CSS from `node_modules` to transpile, due to the `jest` configuration. I might just be missing something obvious.
+If your setup is using `css-loader` only, without PostCSS then you should be fine.
+If you have `modules: true` enabled in `css-loader`, you need to also enable it for `jest-transform-css` (see "Enabling CSS modules"). When components import CSS modules in the test environment, then the CSS is transformed through PostCSS's `cssModules` plugin to generate the classnames. It also injects the styles into `jsdom`.
