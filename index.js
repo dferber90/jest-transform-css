@@ -6,6 +6,8 @@ const stripIndent = require("common-tags/lib/stripIndent");
 const THIS_FILE = fs.readFileSync(__filename);
 const explorer = cosmiconfig("jesttransformcss");
 const transformConfig = explorer.searchSync();
+const stylus = require('stylus');
+const utils = require('./utils.js');
 
 module.exports = {
   getCacheKey: (fileData, filename, configString, { instrument }) => {
@@ -59,6 +61,27 @@ module.exports = {
     // transformation!
     // https://twitter.com/kentcdodds/status/1043194634338324480
     const postcssRunner = `${__dirname}/postcss-runner.js`;
+    
+    
+    /* If the css is stylus, then we will need to compile it first into CSS and then feed
+    to the next step
+    */
+    if (transformConfig.config.stylus){
+      let str = fs.readFileSync(filename , 'utf8')
+
+        if(utils.checkForComposes(str)){
+          const pathToStyles = transformConfig.config.pathToStyles || 'src/styles';
+          str =  utils.extractCSSFromComposedFile(str, config.rootDir, pathToStyles);
+        }
+        
+        const renderedCss = stylus(str).render();
+      
+        src = renderedCss;
+    }
+    /*
+      Stylus processing ends, now feed src to the next step
+    */
+
     const result = crossSpawn.sync("node", [
       "-e",
       stripIndent`

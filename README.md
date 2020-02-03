@@ -1,6 +1,6 @@
 # jest-transform-css
 
-A Jest transformer which enables importing CSS into Jest's `jsdom`.
+A Jest transformer which enables importing CSS into Jest's `jsdom`.  Additionally, it supports applicatitons which uses stylus.
 
 **If you are not here for Visual Regression Testing, but just want to make your tests work with CSS Modules, then you are likley looking for https://github.com/keyanzhang/identity-obj-proxy/.**
 
@@ -72,6 +72,16 @@ transform: {
 }
 ```
 
+If you are using stylus
+
+```
+// in the Jest config
+transform: {
+  "^.+\\.js$": "babel-jest",
+ "^.+\\.(styl|css)$": "jest-transform-css",
+}
+```
+
 > Notice that `babel-jest` gets added as well.
 >
 > The `babel-jest` code preprocessor is enabled by default, when no other preprocessors are added. As `jest-transform-css` is a code preprocessor, `babel-jest` gets disabled when `jest-transform-css` is added.
@@ -94,7 +104,19 @@ module.exports = {
 };
 ```
 
-This will enable CSS module transformation for all CSS files transformed by `jest-transform-css`.
+In case, you are using stylus
+
+```js
+// jesttransformcss.config.js
+
+module.exports = {
+  modules: true,
+  stylus: true,
+  pathToStyles: 'src/styles'  // this is the path where your styles reside. used for resolving path provided by `composes` keyword in stylus
+};
+```
+
+This will enable CSS module transformation for all CSS and Stylus files transformed by `jest-transform-css`.
 
 If your setup uses both, CSS modules and regular CSS, then you can determine how to load each file individually by specifying a function:
 
@@ -107,6 +129,9 @@ module.exports = {
 ```
 
 This will load all files with `.mod.css` as CSS modules and load all other files as regular CSS. Notice that the function will only be called for whichever regex you provided in the `transform` option of the Jest config.
+
+
+**Note**: *If your stylus files are using `require` to import styles from other stylus files, you will run into some issues since stylus cannot compile a relative path. You either will have to provide an absolute path of the file or will need to change the path into a webpack alias, eg. ~styles, and regex the `~` with the root path. This change will have to be done in this package itself.*
 
 ## Further setup
 
