@@ -65,8 +65,8 @@ module.exports = {
         require("${postcssRunner}")(
           ${JSON.stringify({
             src,
-            filename
-            // config,
+            filename,
+            transformConfig: transformConfig.config
             // options
           })}
         )
