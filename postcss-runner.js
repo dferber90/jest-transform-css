@@ -4,7 +4,7 @@ const cssModules = require("postcss-modules");
 
 // This script is essentially a PostCSS Runner
 // https://github.com/postcss/postcss/blob/master/docs/guidelines/runner.md#postcss-runner-guidelines
-module.exports = ({ src, filename }) => {
+module.exports = ({ src, filename, transformConfig }) => {
   const ctx = {
     // Not sure whether the map is useful or not.
     // Disabled for now. We can always enable it once it becomes clear.
@@ -34,11 +34,12 @@ module.exports = ({ src, filename }) => {
     .then(({ plugins, options }) => {
       return postcss([
         cssModules({
-          // Should we read generateScopedName from options?
-          // Does anybody care about the actual names? This is test-only anyways?
-          // Should be easy to add in case anybody needs it, just pass it through
-          // from jest.config.js (we have "config" & "options" in css.js)
-          generateScopedName: "[path][local]-[hash:base64:10]",
+          // Add 'generateScopedName' property to 'jesttransformcss.config.js' for custom name generation. 
+          // List of available placeholder tokens: https://github.com/webpack/loader-utils#interpolatename
+          // *Note some placeholder tokens appear to not be working
+          generateScopedName:
+            transformConfig && transformConfig.generateScopedName ||
+            "[path][local]-[hash:base64:10]",
           getJSON: (cssFileName, exportedTokens, outputFileName) => {
             tokens = exportedTokens;
           }

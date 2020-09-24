@@ -108,6 +108,19 @@ module.exports = {
 
 This will load all files with `.mod.css` as CSS modules and load all other files as regular CSS. Notice that the function will only be called for whichever regex you provided in the `transform` option of the Jest config.
 
+Also supports `generateScopedName` property to customize the generated class names. Helpful when using Jest Snapshots and not wanting unnecessary noise from hash generated classnames.
+
+```js
+// jesttransformcss.config.js
+
+module.exports = {
+  modules: true,
+  generateScopedName: "[path]_[name]_[local]"
+  // Default value is: '[path][local]-[hash:base64:10]'
+};
+```
+Link to all available [placeholder tokens](https://github.com/webpack/loader-utils#interpolatename) \*Note not all placeholders are working and must be tested.
+
 ## Further setup
 
 There are many ways to set up styles in a project (CSS modules, global styles, external global styles, local global styles, CSS in JS, LESS, SASS just to name a few). How to continue from here depends on your project.
