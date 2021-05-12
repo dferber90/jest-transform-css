@@ -14,10 +14,10 @@
     "style-inject": "0.3.0"
   },
   "devDependencies": {
-    "postcss": "^7.0.2"
+    "postcss": "^8.2.10"
   },
   "peerDependencies": {
-    "postcss": "^7.0.2"
+    "postcss": "^8.2.10"
   },
   "keywords": [
     "postcss-runner",
