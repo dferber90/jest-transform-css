@@ -8,7 +8,13 @@ const explorer = cosmiconfig("jesttransformcss");
 const transformConfig = explorer.searchSync();
 
 module.exports = {
-  getCacheKey: (fileData, filename, configString, { instrument }) => {
+  getCacheKey: (fileData, filename, configString, options) => {
+    // Jest 27 passes a single options bag which contains `configString` rather than as a separate argument
+    if (!options) {
+      options = configString;
+      configString = options.configString;
+    }
+    const { instrument} = options;
     return (
       crypto
         .createHash("md5")
