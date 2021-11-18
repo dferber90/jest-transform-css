@@ -1,11 +1,11 @@
 const fs = require("fs");
 const crypto = require("crypto");
 const crossSpawn = require("cross-spawn");
-const cosmiconfig = require("cosmiconfig");
+const { cosmiconfigSync } = require("cosmiconfig");
 const stripIndent = require("common-tags/lib/stripIndent");
 const THIS_FILE = fs.readFileSync(__filename);
-const explorer = cosmiconfig("jesttransformcss");
-const transformConfig = explorer.searchSync();
+const explorer = cosmiconfigSync("jesttransformcss");
+const transformConfig = explorer.search();
 
 module.exports = {
   getCacheKey: (fileData, filename, configString, options) => {
@@ -14,7 +14,7 @@ module.exports = {
       options = configString;
       configString = options.configString;
     }
-    const { instrument} = options;
+    const { instrument } = options;
     return (
       crypto
         .createHash("md5")
@@ -72,12 +72,12 @@ module.exports = {
           ${JSON.stringify({
             src,
             filename,
-            transformConfig: transformConfig.config
+            transformConfig: transformConfig.config,
             // options
           })}
         )
         .then(out => { console.log(JSON.stringify(out)) })
-      `
+      `,
     ]);
 
     // check for errors of postcss-runner.js
@@ -94,7 +94,7 @@ module.exports = {
       css = parsed.css;
       tokens = parsed.tokens;
       if (Array.isArray(parsed.warnings))
-        parsed.warnings.forEach(warning => {
+        parsed.warnings.forEach((warning) => {
           console.warn(warning);
         });
     } catch (error) {
@@ -114,5 +114,5 @@ module.exports = {
       styleInject(${JSON.stringify(css)});
       module.exports = ${JSON.stringify(tokens)};
     `;
-  }
+  },
 };
