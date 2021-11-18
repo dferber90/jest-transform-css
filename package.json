@@ -6,7 +6,7 @@
   "author": "Dominik Ferber <dominik.ferber+npm@gmail.com> (http://dferber.de/)",
   "license": "MIT",
   "dependencies": {
-    "common-tags": "1.8.0",
+    "common-tags": "1.8.2",
     "cosmiconfig": "5.0.6",
     "cross-spawn": "6.0.5",
     "postcss-load-config": "2.0.0",
