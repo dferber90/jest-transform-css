@@ -52,12 +52,14 @@ module.exports = {
         (typeof transformConfig.config.modules === "function" &&
           transformConfig.config.modules(filename)));
     if (!useModules) {
-      return stripIndent`
-        const styleInject = require('style-inject');
+      return {
+        code: stripIndent`
+          const styleInject = require('style-inject');
 
-        styleInject(${JSON.stringify(src)});
-        module.exports = {};
-      `;
+          styleInject(${JSON.stringify(src)});
+          module.exports = {};
+        `,
+      };
     }
 
     // The "process" function of this Jest transform must be sync,
@@ -101,18 +103,22 @@ module.exports = {
       // we forward the logs and return no mappings
       console.error(result.stderr.toString());
       console.log(result.stdout.toString());
-      return stripIndent`
-        console.error("transform-css: Failed to load '${filename}'");
-        module.exports = {};
-      `;
+      return {
+        code: stripIndent`
+          console.error("transform-css: Failed to load '${filename}'");
+          module.exports = {};
+        `,
+      };
     }
 
     // Finally, inject the styles to the document
-    return stripIndent`
-      const styleInject = require('style-inject');
+    return {
+      code: stripIndent`
+        const styleInject = require('style-inject');
 
-      styleInject(${JSON.stringify(css)});
-      module.exports = ${JSON.stringify(tokens)};
-    `;
+        styleInject(${JSON.stringify(css)});
+        module.exports = ${JSON.stringify(tokens)};
+      `,
+    };
   },
 };
