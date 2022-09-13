@@ -84,40 +84,30 @@ transform: {
 
 By default, `jest-transform-css` will treat every file it transforms as a regular CSS file.
 
-You need to opt into css-modules mode by specifying it in the configuration. Create a file called `jesttransformcss.config.js` at your project root and add
+You need to opt into css-modules mode by specifying it in the configuration.
+Add `{ modules: true }` option to `jest-transform-css` in `jest.config.js`:
 
-```js
-// jesttransformcss.config.js
-
-module.exports = {
-  modules: true
-};
+```diff
+// in the Jest config
+transform: {
+-  "^.+\\.css$": "jest-transform-css"
++  "^.+\\.css$": ["jest-transform-css", { modules: true }]
+}
 ```
 
-This will enable CSS module transformation for all CSS files transformed by `jest-transform-css`.
+This will enable CSS module transformation by `jest-transform-css` for all CSS files matching the pattern.
 
-If your setup uses both, CSS modules and regular CSS, then you can determine how to load each file individually by specifying a function:
+The config also supports `generateScopedName` property to customize the generated class names. Helpful when using Jest Snapshots and not wanting unnecessary noise from hash generated classnames.
 
-```js
-// jesttransformcss.config.js
-
-module.exports = {
-  modules: filename => filename.endsWith(".mod.css")
-};
 ```
-
-This will load all files with `.mod.css` as CSS modules and load all other files as regular CSS. Notice that the function will only be called for whichever regex you provided in the `transform` option of the Jest config.
-
-Also supports `generateScopedName` property to customize the generated class names. Helpful when using Jest Snapshots and not wanting unnecessary noise from hash generated classnames.
-
-```js
-// jesttransformcss.config.js
-
-module.exports = {
-  modules: true,
-  generateScopedName: "[path]_[name]_[local]"
-  // Default value is: '[path][local]-[hash:base64:10]'
-};
+// in the Jest config
+transform: {
+  "^.+\\.css$": ["jest-transform-css", {
+    modules: true,
+    generateScopedName: "[path]_[name]_[local]"
+    // Default value is: '[path][local]-[hash:base64:10]'
+  }]
+}
 ```
 Link to all available [placeholder tokens](https://github.com/webpack/loader-utils#interpolatename) \*Note not all placeholders are working and must be tested.
 

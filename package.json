@@ -7,7 +7,6 @@
   "license": "MIT",
   "dependencies": {
     "common-tags": "1.8.2",
-    "cosmiconfig": "7.0.1",
     "cross-spawn": "7.0.3",
     "postcss-load-config": "2.0.0",
     "postcss-modules": "4.3.1",
