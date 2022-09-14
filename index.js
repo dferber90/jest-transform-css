@@ -1,11 +1,8 @@
 const fs = require("fs");
 const crypto = require("crypto");
 const crossSpawn = require("cross-spawn");
-const { cosmiconfigSync } = require("cosmiconfig");
 const stripIndent = require("common-tags/lib/stripIndent");
 const THIS_FILE = fs.readFileSync(__filename);
-const explorer = cosmiconfigSync("jesttransformcss");
-const transformConfig = explorer.search();
 
 module.exports = {
   getCacheKey: (fileData, filename, configString, options) => {
@@ -26,7 +23,7 @@ module.exports = {
         .update("\0", "utf8")
         .update(configString)
         .update("\0", "utf8")
-        .update(JSON.stringify(transformConfig))
+        .update(JSON.stringify(options.transformerConfig))
         // TODO load postcssrc (the config) sync and make it part of the cache
         // key
         // .update("\0", "utf8")
@@ -39,18 +36,14 @@ module.exports = {
 
   process: (src, filename, config, options) => {
     // skip when plain CSS is used
-    // You can create jesttransformcss.config.js in your project and add
-    // module.exports = { modules: true };
-    // or
-    // module.exports = { modules: filename => filename.endsWith(".mod.css") };
-    // to enable css module transformation. for all or for certain files.
+    // You can pass config to the transformer in jest.config.js like so:
+    // "^.+\\.css$": ["jest-transform-css", { modules: true }]
+    // to enable css module transformation.
     const useModules =
-      transformConfig &&
-      transformConfig.config &&
-      ((typeof transformConfig.config.modules === "boolean" &&
-        transformConfig.config.modules) ||
-        (typeof transformConfig.config.modules === "function" &&
-          transformConfig.config.modules(filename)));
+      config &&
+      config.transformerConfig &&
+      ((typeof config.transformerConfig.modules === "boolean" &&
+        config.transformerConfig.modules));
     if (!useModules) {
       return {
         code: stripIndent`
@@ -74,7 +67,7 @@ module.exports = {
           ${JSON.stringify({
             src,
             filename,
-            transformConfig: transformConfig.config,
+            transformConfig: config.transformerConfig,
             // options
           })}
         )
@@ -92,7 +85,7 @@ module.exports = {
     try {
       // we likely logged something to the console from postcss-runner
       // in order to debug, and hence the parsing fails!
-      parsed = JSON.parse(result.stdout.toString());
+      const parsed = JSON.parse(result.stdout.toString());
       css = parsed.css;
       tokens = parsed.tokens;
       if (Array.isArray(parsed.warnings))
