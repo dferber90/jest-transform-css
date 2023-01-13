@@ -1,6 +1,7 @@
 const fs = require("fs");
 const crypto = require("crypto");
 const crossSpawn = require("cross-spawn");
+const path = require("path");
 const stripIndent = require("common-tags/lib/stripIndent");
 const THIS_FILE = fs.readFileSync(__filename);
 
@@ -59,11 +60,11 @@ module.exports = {
     // but postcss is async. So we spawn a sync process to do an sync
     // transformation!
     // https://twitter.com/kentcdodds/status/1043194634338324480
-    const postcssRunner = `${__dirname}/postcss-runner.js`;
+    const postcssRunner = JSON.stringify(path.join(__dirname, "postcss-runner.js"));
     const result = crossSpawn.sync("node", [
       "-e",
       stripIndent`
-        require("${postcssRunner}")(
+        require(${postcssRunner})(
           ${JSON.stringify({
             src,
             filename,
