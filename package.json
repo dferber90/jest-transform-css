@@ -7,7 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "common-tags": "1.8.2",
-    "cross-spawn": "7.0.3",
+    "cross-spawn": "7.0.5",
     "postcss-load-config": "4.0.1",
     "postcss-modules": "4.3.1",
     "style-inject": "0.3.0"
