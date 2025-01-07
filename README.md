@@ -4,20 +4,6 @@ A Jest transformer which enables importing CSS into Jest's `jsdom`.
 
 **If you are not here for Visual Regression Testing, but just want to make your tests work with CSS Modules, then you are likley looking for https://github.com/keyanzhang/identity-obj-proxy/.**
 
-> ⚠️ **This package is experimental.**
-> It works with the tested project setups, but needs to be tested in more.
-> If you struggle to set it up properly, it might be the fault of this package.
-> Please file an issue and provide reproduction, or even open a PR to add support.
->
-> The document is also sparse at the moment. Feel free to open an issue in case you have any questions!
->
-> I am not too familiar with PostCSS and Jest, so further simplification of
-> this plugin might be possible. I'd appreciate any hints!
->
-> If this approach is working for you, please let me know on Twitter ([@dferber90](https://twitter.com/dferber90)) or by starring the [GitHub repo](https://github.com/dferber90/jest-transform-css).
->
-> I am looking for contributors to help improve this package!
-
 ## Description
 
 When you want to do Visual Regression Testing in Jest, it is important that the CSS of components is available to the test setup. So far, CSS was not part of tests as it was mocked away by using `moduleNameMapper` like a file-mock or `identity-obj-proxy`.
@@ -109,6 +95,7 @@ transform: {
   }]
 }
 ```
+
 Link to all available [placeholder tokens](https://github.com/webpack/loader-utils#interpolatename) \*Note not all placeholders are working and must be tested.
 
 ## Further setup

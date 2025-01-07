@@ -1,13 +1,13 @@
 {
   "name": "jest-transform-css",
   "description": "Jest transformer to import CSS into Jest's `jsdom`",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "main": "index.js",
   "author": "Dominik Ferber <dominik.ferber+npm@gmail.com> (http://dferber.de/)",
   "license": "MIT",
   "dependencies": {
     "common-tags": "1.8.2",
-    "cross-spawn": "7.0.3",
+    "cross-spawn": "^7.0.6",
     "postcss-load-config": "4.0.1",
     "postcss-modules": "4.3.1",
     "style-inject": "0.3.0"
