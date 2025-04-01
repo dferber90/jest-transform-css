@@ -78,7 +78,7 @@ module.exports = {
 
     // check for errors of postcss-runner.js
     const error = result.stderr.toString();
-    if (error) throw error;
+    if (result.status !== 0 && error) throw error;
 
     // read results of postcss-runner.js from stdout
     let css;
