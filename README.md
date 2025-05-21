@@ -4,6 +4,8 @@ A Jest transformer which enables importing CSS into Jest's `jsdom`.
 
 **If you are not here for Visual Regression Testing, but just want to make your tests work with CSS Modules, then you are likley looking for https://github.com/keyanzhang/identity-obj-proxy/.**
 
+**This package is no longer maintained**
+
 ## Description
 
 When you want to do Visual Regression Testing in Jest, it is important that the CSS of components is available to the test setup. So far, CSS was not part of tests as it was mocked away by using `moduleNameMapper` like a file-mock or `identity-obj-proxy`.
